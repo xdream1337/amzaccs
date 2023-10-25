@@ -109,105 +109,147 @@ def delete_element(driver, element_id, text):
         element.send_keys(Keys.BACKSPACE)
 
 
-def main(driver, url):
-    """driver.get("https://github.com/SeleniumHQ/selenium/issues/10025")
-    time.sleep(10)
-    driver.get(
-        "https://www.endtest.io/blog/a-practical-guide-for-finding-elements-with-selenium"
-    )
-    time.sleep(10)
-    driver.get("https://www.selenium.dev/documentation/webdriver/elements/finders/")
-    time.sleep(10)
-    driver.get(
-        "https://www.reddit.com/r/selenium/comments/wjv59o/selenium_cant_find_element_with_idname/"
-    )
-    time.sleep(10)
-    driver.get(
-        "https://subscription.packtpub.com/book/programming/9781784392512/2/ch02lvl1sec22/finding-elements-by-tag-name"
-    )
-    time.sleep(10)
-    driver.get("https://pythonexamples.org/python-selenium-find-element-by-tag-name/")
-    time.sleep(10)
-    driver.get("https://twitter.com/")
-    time.sleep(10)
-    driver.get("https://amazon.com")
-    time.sleep(10)
-    driver.get(
-        "https://www.amazon.com/2021-Apple-10-2-inch-iPad-Wi-Fi/dp/B09G9FPHY6/ref=lp_16225009011_1_2?sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D"
-    )
-    time.sleep(10)
-    driver.get(
-        "https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A3777891&_encoding=UTF8&ref=pd_gw_unk"
-    )
-    time.sleep(10)
-    driver.get(
-        "https://www.amazon.com/deal/7def8902/?_encoding=UTF8&showVariations=false&moreDeals=11461066&_ref=dlx_gate_dd_dcl_tlt_7def8902_dt&ref_=pd_gw_unk"
-    )
-    time.sleep(10)
-    driver.get(
-        "https://www.amazon.com/Team-Fan-Apparel-Lightweight-Semi-Fitted/dp/B09K63NCK1?ref_=Oct_DLandingS_D_7def8902_2"
-    )
-    time.sleep(10)
-    driver.get(
-        "https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261?ref_pageloadid=not_applicable&ref=a_hp_c6_p13n-mpl-dt-c_1_4&pf_rd_p=54cb6340-d253-4ab5-a77b-9d49d89f9640&pf_rd_r=JTV08HGV5FN3CER5FM27&pageLoadId=arXkf4mdipk4ViET&ref_plink=not_applicable&creativeId=41d14d25-162f-48fb-9d54-1ae394965020"
-    )
-    time.sleep(10)
-    driver.get("https://www.shopbop.com")
-    time.sleep(10)
-    driver.get("https://www.boxofficemojo.com/?ref_=amzn_nav_ftr")
-    time.sleep(10)
-    driver.get(
-        "https://news.google.com/articles/CBMilAFodHRwczovL3d3dy50aGVndWFyZGlhbi5jb20vY29tbWVudGlzZnJlZS8yMDIzL29jdC8yNC90aGUtZ3VhcmRpYW4tdmlldy1vbi10aGUtcG93ZXItb2YtZm9yZ2l2ZW5lc3MtYS1mcmVlZC1ob3N0YWdlcy1nZXN0dXJlLXNob3VsZC1ub3QtYmUtZm9yZ290dGVu0gEA?hl=en-US&gl=US&ceid=US%3Aen"
-    )
-    time.sleep(10)
-    driver.get("https://www.youtube.com/watch?v=E17P_aq_UaI")
-    time.sleep(10)"""
+# click 10 times on random links on loaded url
+def iterate_domain_links(driver, url):
+    wait = WebDriverWait(driver, 10)  # Adjust the timeout as needed
 
-    # woot flow
-    """element = WebDriverWait(driver, 10).until(
+    driver.get(url)
+
+    for i in range(10):
+        try:
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, "a")))
+        except TimeoutException:
+            pass
+
+        a_list = driver.find_elements(By.TAG_NAME, "a")
+        all_links = [item.get_attribute("href") for item in a_list]
+        link = random.choice(all_links)
+        driver.get(link)
+        time.sleep(random.randint(5, 10))
+
+
+def woot_registration_flow(driver):
+    driver.get("https://woot.com")
+
+    # hover over account signin
+    element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "signin"))
     )
     actions = ActionChains(driver)
     actions.move_to_element(element).perform()
+
+    # click on signup button
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "signup"))
     )
     actions = ActionChains(driver)
     actions.move_to_element(element).click().perform()
     time.sleep(1)
+
+    # click on create account button
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "createAccountSubmit"))
     )
     actions = ActionChains(driver)
     actions.move_to_element(element).click().perform()
+
+    # click on create amazon account link
     time.sleep(1)
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Create an Amazon"))
     )
     actions = ActionChains(driver)
-    actions.move_to_element(element).click().perform()"""
+    actions.move_to_element(element).click().perform()
 
+    register_form_with_email_check(driver)
+
+
+def amazon_registration_flow(driver):
+    driver.get("https://amazon.com")
+
+    # hover over account signin
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Account & Lists"))
+    )
+    actions = ActionChains(driver)
+    actions.move_to_element(element).perform()
+    time.sleep(0.5)
+
+    # click on signup button
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Start here."))
+    )
+    actions = ActionChains(driver)
+    actions.move_to_element(element).click().perform()
+
+    register_form_without_email_check(driver)
+
+
+def audible_registration_flow(driver):
     driver.get("https://audible.com")
-    time.sleep(4)
+
+    # click on sign up link
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Sign Up"))
     )
     actions = ActionChains(driver)
     actions.move_to_element(element).click().perform()
     time.sleep(1)
+
+    # click on create account button
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "createAccountSubmit"))
     )
     actions = ActionChains(driver)
     actions.move_to_element(element).click().perform()
     time.sleep(1)
-    # driver.get(url)
+
+    register_form_without_email_check(driver)
+
+
+def register_form_without_email_check(driver):
+    time.sleep(5)
+
+    input_element(driver, "ap_customer_name", "Greg Kulinaai", True)
+    time.sleep(1)
+    input_element(driver, "ap_email", "gregkulinski@gmail.com", True)
+    time.sleep(0.8)
+    input_element(driver, "ap_password", "abcdefghtp123", True)
+    time.sleep(0.75)
+    input_element(driver, "ap_password_check", "abcdefghtp123", True)
+    time.sleep(0.89)
+    delete_element(driver, "ap_customer_name", "nski")
+    time.sleep(0.67)
+    input_element(driver, "ap_customer_name", "nski", True)
+    time.sleep(0.89)
+
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "continue"))
+        )
+        actions = ActionChains(driver)
+        actions.move_to_element(element).click().perform()
+    except:
+        pass
+
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "continue-signup"))
+        )
+        actions = ActionChains(driver)
+        actions.move_to_element(element).click().perform()
+    except:
+        pass
+
+
+def register_form_with_email_check(driver):
+    time.sleep(4)
 
     input_element(driver, "ap_customer_name", "Johnnz Grazson", True)
     time.sleep(1)
     input_element(driver, "ap_email", "graysonjohnny@gmail.com", True)
     time.sleep(0.8)
-    # input_element(driver, "ap_email_check", "graysonjohnny", True)
+    input_element(driver, "ap_email_check", "graysonjohnny", True)
     time.sleep(0.9)
     input_element(driver, "ap_password", "abcdefghtp123", True)
     time.sleep(0.75)
@@ -217,25 +259,46 @@ def main(driver, url):
     time.sleep(0.67)
     input_element(driver, "ap_customer_name", "y Grayson", True)
     time.sleep(0.89)
-    # delete_element(driver, "ap_email_check", "graysonjohnny@gmail.com")
+    delete_element(driver, "ap_email_check", "graysonjohnny@gmail.com")
     time.sleep(0.6)
-    # input_element(driver, "ap_email_check", "graysonjohnny@gmail.com", True)
+    input_element(driver, "ap_email_check", "graysonjohnny@gmail.com", True)
     time.sleep(0.99)
 
-    element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "continue"))
-    )
-    actions = ActionChains(driver)
-    actions.move_to_element(element).click().perform()
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "continue"))
+        )
+        actions = ActionChains(driver)
+        actions.move_to_element(element).click().perform()
+    except:
+        pass
+
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "continue-signup"))
+        )
+        actions = ActionChains(driver)
+        actions.move_to_element(element).click().perform()
+    except:
+        pass
+
+
+def mainn(driver):
+    # iterate_domain_links(driver, "https://github.com")
+    # iterate_domain_links(driver, "https://twitter.com")
+    # iterate_domain_links(driver, "https://reddit.com")
+    # iterate_domain_links(driver, "https://amazon.com")
+    # iterate_domain_links(driver, "https://woot.com")
+    # iterate_domain_links(driver, "https://6pm.com")
+
+    amazon_registration_flow(driver)
 
 
 Thread(
-    target=main,
-    args=(
-        driver,
-        "https://www.amazon.com/ap/register?openid.pape.max_auth_age=1209600&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&siteState=131-4116517-6138845&marketPlaceId=AF2M0KC94RCEA&pageId=amzn_audible_bc_us&openid.return_to=https%3A%2F%2Fwww.audible.com%2Fsubscription%2Fconfirmation%3Fref_pageloadid%3Dnot_applicable%26ref%3Da_hp_c1_member_cta1%26pf_rd_p%3D0b9dcaaa-04f3-44aa-ace6-e1cb47945f3f%26membershipAsin%3DB076FLV3HT%26pf_rd_r%3DZY0TJW68629V4A4PASDJ%26pageLoadId%3Dj2QsQl8cOIk941Kq%26ref_plink%3Dnot_applicable%26creativeId%3D711b5140-9c53-4812-acee-f4c553eb51fe%26loginAttempt%3Dtrue&prevRID=WPEMRBTGC72HK7TAA3Q2&openid.assoc_handle=audible_shared_web_sso_us&openid.mode=checkid_setup&prepopulatedLoginId=&failedSignInCount=0&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0",
-    ),
+    target=mainn,
+    args=(driver,),
 ).start()
+
 Thread(target=enter_proxy_auth, args=(user, passw)).start()
 
 input("Press Enter to close the browser...")
