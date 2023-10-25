@@ -165,7 +165,7 @@ def woot_registration_flow(driver):
 
 
 def amazon_registration_flow(driver):
-    driver.get("https://amazon.com")
+    driver.get("https://www.amazon.com/gp/css/homepage.html/ref=nav_bb_ya")
 
     # hover over account signin
     element = WebDriverWait(driver, 10).until(
